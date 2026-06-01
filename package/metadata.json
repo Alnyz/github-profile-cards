@@ -3,7 +3,7 @@
         "Id": "id.alnyz.githubgraph",
         "Name": "GitHub Contribution Graph",
         "Description": "Shows your GitHub contribution heatmap on your desktop or panel",
-        "Icon": "github",
+        "Icon": "id.alnyz.githubgraph",
         "Authors": [ { "Name": "Alnyz" } ],
         "Category": "Online Services",
         "License": "MIT",

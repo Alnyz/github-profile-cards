@@ -9,6 +9,6 @@ MouseArea {
 
     Kirigami.Icon {
         anchors.fill: parent
-        source: "github"
+        source: "id.alnyz.githubgraph-mark"
     }
 }
