@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Id": "id.alnyz.githubgraph",
+        "Name": "GitHub Contribution Graph",
+        "Description": "Shows your GitHub contribution heatmap on your desktop or panel",
+        "Icon": "github",
+        "Authors": [ { "Name": "Alnyz" } ],
+        "Category": "Online Services",
+        "License": "MIT",
+        "Version": "0.1.0"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="cards" type="StringList">
+            <default>profile,stats,heatmap,languages</default>
+        </entry>
+        <entry name="columnCount" type="Int">
+            <default>1</default>
+        </entry>
+        <entry name="refreshMinutes" type="Int">
+            <default>30</default>
+        </entry>
+        <entry name="heatmapPeriod" type="String">
+            <default>year</default>
+        </entry>
+        <entry name="heatmapUseAccent" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="profileShowAvatar" type="Bool"><default>true</default></entry>
+        <entry name="profileShowName" type="Bool"><default>true</default></entry>
+        <entry name="profileShowLogin" type="Bool"><default>true</default></entry>
+        <entry name="profileShowBio" type="Bool"><default>true</default></entry>
+        <entry name="profileShowFollowers" type="Bool"><default>true</default></entry>
+        <entry name="profileShowFollowing" type="Bool"><default>true</default></entry>
+        <entry name="profileShowRepos" type="Bool"><default>true</default></entry>
+        <entry name="languagesCount" type="Int"><default>5</default></entry>
+        <entry name="languagesIncludeForks" type="Bool"><default>false</default></entry>
+        <entry name="authMode" type="String">
+            <default>device</default>
+        </entry>
+        <entry name="oauthToken" type="String">
+            <default></default>
+        </entry>
+    </group>
+</kcfg>
