@@ -9,6 +9,11 @@ MouseArea {
 
     Kirigami.Icon {
         anchors.fill: parent
-        source: "id.alnyz.githubgraph-mark"
+        // Bundled GitHub mark, recolored to the panel theme (isMask flattens it to the
+        // current text color). Self-contained so it works on "Get New Widgets" installs,
+        // where install.sh never runs to seed the icon theme.
+        source: Qt.resolvedUrl("../icons/github.svg")
+        isMask: true
+        color: Kirigami.Theme.textColor
     }
 }

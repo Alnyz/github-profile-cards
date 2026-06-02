@@ -3,7 +3,7 @@
         "Id": "id.alnyz.githubgraph",
         "Name": "GitHub Profile Cards",
         "Description": "Shows your GitHub contribution heatmap on your desktop or panel",
-        "Icon": "id.alnyz.githubgraph",
+        "Icon": "/icons/icon.png",
         "Authors": [ { "Name": "Alnyz" } ],
         "Category": "Online Services",
         "License": "MIT",
