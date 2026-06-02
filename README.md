@@ -38,8 +38,8 @@ instead.
 ## Installation
 
 ```bash
-git clone https://github.com/Alnyz/github-graph-widget.git
-cd github-graph-widget
+git clone https://github.com/Alnyz/github-profile-cards.git
+cd github-profile-cards
 ./scripts/install.sh
 ```
 
