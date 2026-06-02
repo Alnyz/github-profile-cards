@@ -2,10 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
-// Lays out enabled cards into ROWS: full-width cards (heatmap/languages) each get
-// their own row; narrow cards pack into rows of `columnCount`. A single divider
-// spans the full width under each row, so side-by-side cards share one connected
-// separator (cards no longer draw their own divider).
+// Lays out the enabled cards in rows: full-width cards (heatmap, languages) take a
+// row each, the rest pack into rows of `columnCount`. A divider spans each row.
 ColumnLayout {
     id: host
 
@@ -38,8 +36,7 @@ ColumnLayout {
         return out;
     }
 
-    // Re-fetch every loaded card. Cards live inside nested row/column layouts, so
-    // walk the object tree and call reload() on any Loader's loaded item.
+    // Re-fetch every loaded card. They sit inside nested layouts, so walk the tree.
     function reloadAll() { host._reload(host); }
     function _reload(obj) {
         if (!obj || !obj.children) return;
@@ -81,7 +78,7 @@ ColumnLayout {
                 }
             }
 
-            // One connected divider spanning the whole row.
+            // Row divider.
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1

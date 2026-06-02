@@ -4,9 +4,9 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 import "../../code/GitHub.js" as GitHub
 import "heatmap.js" as Heatmap
-import ".."   // makes ui/ components (HeatmapGrid) resolvable by name
+import ".."   // for HeatmapGrid
 
-// Heatmap card. Set `token`; it fetches and renders its own contribution calendar.
+// Heatmap card: fetches and draws the contribution calendar. Set `token` to use it.
 ColumnLayout {
     id: card
 
@@ -49,7 +49,6 @@ ColumnLayout {
         function onHeatmapPeriodChanged() { card.reload(); }
     }
 
-    // --- inlined minimal-style chrome ---
     PlasmaComponents.Label {
         text: ("Contributions · " + plasmoid.configuration.heatmapPeriod).toUpperCase()
         font: Kirigami.Theme.smallFont
@@ -91,5 +90,5 @@ ColumnLayout {
         text: card.status
     }
 
-    // Divider is drawn by CardHost at the row level (shared across side-by-side cards).
+    // The row divider is drawn by CardHost.
 }

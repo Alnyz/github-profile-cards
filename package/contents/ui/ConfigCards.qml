@@ -3,20 +3,14 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
-// Cards config: enable/disable, reorder, and per-card options.
-// cfg_cards is the ordered StringList of enabled card ids.
-//
-// CRITICAL: every cfg_ alias target id (pAvatar, langCount, heatmapAccent, …) MUST
-// live at the page ROOT scope, NOT inside a Repeater delegate. Ids declared inside a
-// Repeater/Component delegate are invisible to root-scope `property alias` and cause a
-// hard load failure ("Invalid alias reference"). So the Repeater renders ONLY the
-// enable/reorder rows (which use page functions, no aliases), and the option controls
-// are fixed root-level sections shown via `visible: page.isEnabled(...)`.
+// Cards settings: enable/disable, reorder, and per-card options. cfg_cards holds the
+// ordered list of enabled card ids. A cfg_ alias can only target a root-scope id (not
+// one inside a Repeater delegate), so the per-card options live in the fixed sections
+// below rather than in the reorder list.
 ColumnLayout {
     id: page
     spacing: Kirigami.Units.largeSpacing
 
-    // --- config bindings (ALL cfg_ alias targets are root-scope controls below) ---
     property var cfg_cards: []
     property string cfg_heatmapPeriod: "year"
     property alias cfg_heatmapUseAccent: heatmapAccent.checked
@@ -29,6 +23,9 @@ ColumnLayout {
     property alias cfg_profileShowFollowers: pFollowers.checked
     property alias cfg_profileShowFollowing: pFollowing.checked
     property alias cfg_profileShowRepos: pRepos.checked
+    property alias cfg_profileShowCompany: pCompany.checked
+    property alias cfg_profileShowLocation: pLocation.checked
+    property alias cfg_profileShowJoined: pJoined.checked
 
     // All known cards, canonical order. id must match cards/<Cap>Card.qml.
     readonly property var registry: [
@@ -81,7 +78,7 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
-    // --- enable / reorder list (NO cfg_ aliases inside; only page.* calls) ---
+    // Enable / reorder list.
     Repeater {
         model: page.displayList()
         delegate: RowLayout {
@@ -107,7 +104,7 @@ ColumnLayout {
 
     Kirigami.Separator { Layout.fillWidth: true }
 
-    // --- per-card option sections at ROOT scope; visible only when enabled ---
+    // Per-card options, shown when the card is enabled.
 
     // Profile
     ColumnLayout {
@@ -123,6 +120,9 @@ ColumnLayout {
             CheckBox { id: pFollowers; text: "Followers" }
             CheckBox { id: pFollowing; text: "Following" }
             CheckBox { id: pRepos; text: "Repos" }
+            CheckBox { id: pCompany; text: "Company" }
+            CheckBox { id: pLocation; text: "Location" }
+            CheckBox { id: pJoined; text: "Joined date" }
         }
     }
 

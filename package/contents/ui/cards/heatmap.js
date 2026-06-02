@@ -1,5 +1,4 @@
-// heatmap.js — Heatmap card data module. Plain JS, usable from QML and Node.
-// Do NOT add `.pragma library` (QML-only; breaks Node tests).
+// Heatmap card: GraphQL query and response parser.
 
 function query(fromISO, toISO) {
     var args = "";

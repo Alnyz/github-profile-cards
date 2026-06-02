@@ -24,6 +24,9 @@
         <entry name="profileShowFollowers" type="Bool"><default>true</default></entry>
         <entry name="profileShowFollowing" type="Bool"><default>true</default></entry>
         <entry name="profileShowRepos" type="Bool"><default>true</default></entry>
+        <entry name="profileShowCompany" type="Bool"><default>true</default></entry>
+        <entry name="profileShowLocation" type="Bool"><default>true</default></entry>
+        <entry name="profileShowJoined" type="Bool"><default>true</default></entry>
         <entry name="languagesCount" type="Int"><default>5</default></entry>
         <entry name="languagesIncludeForks" type="Bool"><default>false</default></entry>
         <entry name="authMode" type="String">

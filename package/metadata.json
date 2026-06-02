@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Id": "id.alnyz.githubgraph",
-        "Name": "GitHub Contribution Graph",
+        "Name": "GitHub Profile Cards",
         "Description": "Shows your GitHub contribution heatmap on your desktop or panel",
         "Icon": "id.alnyz.githubgraph",
         "Authors": [ { "Name": "Alnyz" } ],

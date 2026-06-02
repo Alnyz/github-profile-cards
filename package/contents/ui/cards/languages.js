@@ -1,4 +1,4 @@
-// languages.js — Languages card data module. Plain JS (QML import + Node require).
+// Languages card: GraphQL query and response parser.
 function query(includeForks) {
     var fork = includeForks ? "" : ", isFork: false";
     return "query { viewer { repositories(first: 100, ownerAffiliations: OWNER" + fork

@@ -29,9 +29,8 @@ PlasmoidItem {
     fullRepresentation: ColumnLayout {
         id: view
 
-        // Data-independent width: the configured period fixes the heatmap's column
-        // count synchronously (before any fetch), so a fresh add is sized right and
-        // the grid never overflows. `cell`/`gap` MUST match HeatmapCard's values.
+        // Width is derived from the heatmap's column count so it's known before any
+        // fetch. cell/gap must match HeatmapCard's values.
         readonly property int cell: Math.round(Kirigami.Units.gridUnit * 0.62)
         readonly property int gap: Math.max(1, Math.round(cell * 0.14))
         function heatmapCols() {
@@ -43,57 +42,17 @@ PlasmoidItem {
         readonly property int wantWidth: Math.max(Kirigami.Units.gridUnit * 16,
             heatmapCols() * (cell + gap) + Kirigami.Units.largeSpacing * 2)
 
-        // Data-independent height: each enabled card contributes a stable nominal
-        // height (independent of async-loaded content), so a fresh add is tall enough
-        // and cards never overflow the bottom. Over-estimates slightly (extra bottom
-        // space) rather than clipping. NOTE: per-card height knowledge is coupled here;
-        // a later refactor can have each card report its own preferred height.
-        function cardHeight(id) {
-            var gu = Kirigami.Units.gridUnit;
-            if (id === "heatmap")   return 7 * (cell + gap) + gu * 3;
-            if (id === "profile")   return gu * 7;
-            if (id === "stats")     return gu * 4;
-            if (id === "languages") return gu * 5;
-            return gu * 3;
-        }
-        // Full-width cards (heatmap, languages) span all columns → one per row.
-        // Narrow cards (profile, stats) pack into rows of `columnCount`; each row
-        // counts once at its tallest member. Mirrors how CardHost's GridLayout flows.
-        function isFullWidthCard(id) { return id === "heatmap" || id === "languages"; }
-        readonly property int wantHeight: {
-            var ids = plasmoid.configuration.cards;
-            var cols = Math.max(1, plasmoid.configuration.columnCount);
-            var ls = Kirigami.Units.largeSpacing;
-            var h = Kirigami.Units.gridUnit * 3;   // refresh row + outer spacings
-            var rowMax = 0, rowCount = 0;
-            for (var i = 0; i < ids.length; i++) {
-                var ch = cardHeight(ids[i]);
-                if (isFullWidthCard(ids[i])) {
-                    if (rowCount > 0) { h += rowMax + ls; rowMax = 0; rowCount = 0; }
-                    h += ch + ls;
-                } else {
-                    if (ch > rowMax) rowMax = ch;
-                    rowCount++;
-                    if (rowCount >= cols) { h += rowMax + ls; rowMax = 0; rowCount = 0; }
-                }
-            }
-            if (rowCount > 0) h += rowMax + ls;
-            return h;
-        }
-
-        // Pin the size to the computed content size (min == preferred == max) so the
-        // applet always auto-fits and can't retain a stale stored/hand-resized geometry.
-        // This intentionally disables manual resizing — the widget sizes to its cards.
+        // Fix the size to the content (min == max) so the widget auto-fits its cards
+        // instead of keeping a hand-resized geometry.
         Layout.minimumWidth: wantWidth
         Layout.preferredWidth: wantWidth
         Layout.maximumWidth: wantWidth
-        Layout.minimumHeight: wantHeight
-        Layout.preferredHeight: wantHeight
-        Layout.maximumHeight: wantHeight
+        Layout.minimumHeight: view.implicitHeight
+        Layout.preferredHeight: view.implicitHeight
+        Layout.maximumHeight: view.implicitHeight
         spacing: Kirigami.Units.smallSpacing
 
-        // Auth prompt when no token yet. This widget reads the account strictly from
-        // the GitHub CLI (gh); show clear setup steps if it isn't installed/logged in.
+        // Shown until a gh token is available.
         ColumnLayout {
             visible: root.token.length === 0
             Layout.fillWidth: true

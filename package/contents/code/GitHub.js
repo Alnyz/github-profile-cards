@@ -1,9 +1,7 @@
-// GitHub.js — shared GraphQL transport. Plain JS module (QML import + Node require).
-// Do NOT add `.pragma library` (QML-only; breaks Node tests).
+// Shared GraphQL transport for GitHub's API. Usable from QML and Node.
 
-// POST a GraphQL query to GitHub. On success calls onOk(data) where `data` is the
-// response's `data` object (transport + GraphQL errors already handled here).
-// On any failure calls onErr(messageString). Exactly one of onOk/onErr fires.
+// Sends a query to GitHub. Calls onOk(data) with the response's `data` on success,
+// or onErr(message) on failure. Exactly one of the two is called.
 function fetchGraphQL(token, query, variables, onOk, onErr) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "https://api.github.com/graphql");
@@ -33,8 +31,7 @@ function fetchGraphQL(token, query, variables, onOk, onErr) {
             onErr(e.message || ("HTTP " + xhr.status));
             return;
         }
-        // onOk OUTSIDE the try so a throw from a card's parser/UI is not miscaught
-        // and surfaced as a transport error (which would fire both callbacks).
+        // Outside the try so a throwing callback isn't mistaken for a transport error.
         onOk(data);
     };
     xhr.send(JSON.stringify({ query: query, variables: variables || {} }));

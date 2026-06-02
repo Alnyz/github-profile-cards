@@ -5,7 +5,7 @@ import org.kde.kirigami as Kirigami
 import "../../code/GitHub.js" as GitHub
 import "stats.js" as Stats
 
-// Stats card. Set `token`; shows stars / commits / PRs / issues.
+// Stats card: account totals, each with its GitHub icon. Set `token` to use it.
 ColumnLayout {
     id: card
 
@@ -45,15 +45,27 @@ ColumnLayout {
         component Stat: RowLayout {
             property string value: ""
             property string label: ""
+            property string icon: ""
             spacing: Kirigami.Units.smallSpacing
+            Kirigami.Icon {
+                source: Qt.resolvedUrl("../../icons/stats/" + icon + ".svg")
+                isMask: true
+                color: Kirigami.Theme.textColor
+                Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                Layout.preferredHeight: Kirigami.Units.iconSizes.small
+            }
             PlasmaComponents.Label { font.bold: true; text: value }
             PlasmaComponents.Label { opacity: 0.7; text: label }
         }
 
-        Stat { value: card.model ? String(card.model.stars) : "0"; label: "stars" }
-        Stat { value: card.model ? String(card.model.commits) : "0"; label: "commits" }
-        Stat { value: card.model ? String(card.model.prs) : "0"; label: "PRs" }
-        Stat { value: card.model ? String(card.model.issues) : "0"; label: "issues" }
+        Stat { icon: "star"; value: card.model ? String(card.model.stars) : "0"; label: "stars" }
+        Stat { icon: "commits"; value: card.model ? String(card.model.commits) : "0"; label: "commits" }
+        Stat { icon: "prs"; value: card.model ? String(card.model.prs) : "0"; label: "PRs" }
+        Stat { icon: "issues"; value: card.model ? String(card.model.issues) : "0"; label: "issues" }
+        Stat { icon: "sponsors"; value: card.model ? String(card.model.sponsors) : "0"; label: "sponsors" }
+        Stat { icon: "sponsoring"; value: card.model ? String(card.model.sponsoring) : "0"; label: "sponsoring" }
+        Stat { icon: "gists"; value: card.model ? String(card.model.gists) : "0"; label: "gists" }
+        Stat { icon: "orgs"; value: card.model ? String(card.model.orgs) : "0"; label: "orgs" }
     }
 
     RowLayout {
@@ -75,5 +87,5 @@ ColumnLayout {
         text: card.status
     }
 
-    // Divider is drawn by CardHost at the row level (shared across side-by-side cards).
+    // The row divider is drawn by CardHost.
 }

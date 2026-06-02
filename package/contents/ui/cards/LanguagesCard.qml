@@ -5,7 +5,7 @@ import org.kde.kirigami as Kirigami
 import "../../code/GitHub.js" as GitHub
 import "languages.js" as Lang
 
-// Languages card. Set `token`; shows a top-N language bar + legend.
+// Languages card: a top-N language bar with a legend. Set `token` to use it.
 ColumnLayout {
     id: card
 
@@ -105,5 +105,5 @@ ColumnLayout {
         text: card.status
     }
 
-    // Divider is drawn by CardHost at the row level (shared across side-by-side cards).
+    // The row divider is drawn by CardHost.
 }
