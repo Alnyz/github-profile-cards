@@ -109,4 +109,38 @@ const zero = A.parse({ viewer: {
 } }, now);
 assert.strictEqual(zero.achievements.length, 0, "nothing unlocked");
 
+// rank() C-tier progress uses its own denominator (t[1]-t[0]).
+assert.ok(Math.abs(A.rank(10, T).progress - (10 - 1) / (20 - 1)) < 1e-9, "C-tier progress fraction");
+
+// parse() tolerates a null contributionsCollection (Reviewer falls to 0 -> locked).
+const noCC = A.parse({ viewer: {
+  repositories: { totalCount: 0, nodes: [] }, forks: { totalCount: 0 },
+  pullRequests: { totalCount: 0 }, contributionsCollection: null,
+  gists: { totalCount: 0 }, organizations: { totalCount: 0 },
+  starredRepositories: { totalCount: 0 }, followers: { totalCount: 0 },
+  following: { totalCount: 0 }, createdAt: "2026-06-04T00:00:00Z",
+  sponsorshipsAsSponsor: { totalCount: 0 }, discussionsStarted: { totalCount: 0 },
+  discussionsComments: { totalCount: 0 }, popular: { nodes: [] }
+} }, now);
+assert.strictEqual(noCC.achievements.filter(function(x){ return x.id === "reviewer"; })[0], undefined,
+  "null contributionsCollection -> reviewer locked, no throw");
+
+// parse() ignores repo nodes with a null primaryLanguage when counting Polyglot.
+const nullLang = A.parse({ viewer: {
+  repositories: { totalCount: 5, nodes: [
+    { forkCount: 0, primaryLanguage: { name: "Rust" } },
+    { forkCount: 0, primaryLanguage: null }
+  ] },
+  forks: { totalCount: 0 }, pullRequests: { totalCount: 0 },
+  contributionsCollection: { pullRequestReviewContributions: { totalCount: 0 } },
+  gists: { totalCount: 0 }, organizations: { totalCount: 0 },
+  starredRepositories: { totalCount: 0 }, followers: { totalCount: 0 },
+  following: { totalCount: 0 }, createdAt: "2026-06-04T00:00:00Z",
+  sponsorshipsAsSponsor: { totalCount: 0 }, discussionsStarted: { totalCount: 0 },
+  discussionsComments: { totalCount: 0 }, popular: { nodes: [] }
+} }, now);
+const poly = nullLang.achievements.filter(function(x){ return x.id === "polyglot"; })[0];
+assert.strictEqual(poly.description, "Using 1 different programming language",
+  "null primaryLanguage ignored; only 'Rust' counted; singular form");
+
 console.log("ok - achievements.js");

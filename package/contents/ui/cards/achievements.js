@@ -37,6 +37,8 @@ function plural(n, base, one, many) {
 }
 
 // Rank x against thresholds [c,b,a,s,m]. X = locked (filtered out by parse).
+// progress may exceed 1 for values above the S cap (t[4]); harmless for sorting and
+// not rendered, but clamp it if a progress bar is ever added to the view.
 function rank(x, t) {
     if (x >= t[3]) return { rank: "S", progress: (x - t[3]) / (t[4] - t[3]) };
     if (x >= t[2]) return { rank: "A", progress: (x - t[2]) / (t[3] - t[2]) };
