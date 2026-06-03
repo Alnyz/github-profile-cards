@@ -36,9 +36,8 @@ function plural(n, base, one, many) {
     return base + (n === 1 ? one : many);
 }
 
-// Rank x against thresholds [c,b,a,s,m]. X = locked (filtered out by parse).
-// progress may exceed 1 for values above the S cap (t[4]); harmless for sorting and
-// not rendered, but clamp it if a progress bar is ever added to the view.
+// Rank x against thresholds [c,b,a,s,m]. X = locked (kept, shown greyed by the view).
+// progress may exceed 1 for values above the S cap (t[4]); the view clamps it for the gauge arc.
 function rank(x, t) {
     if (x >= t[3]) return { rank: "S", progress: (x - t[3]) / (t[4] - t[3]) };
     if (x >= t[2]) return { rank: "A", progress: (x - t[2]) / (t[3] - t[2]) };
@@ -47,40 +46,46 @@ function rank(x, t) {
     return { rank: "X", progress: t[0] > 0 ? x / t[0] : 0 };
 }
 
-var RANK_COLORS = { S: "#EB355E", A: "#B59151", B: "#7D6CFF", C: "#2088FF" };
-var RANK_ORDER = { S: 4, A: 3, B: 2, C: 1 };
+// Per-rank presentation. Colors from metrics' classic template (title/gauge per rank;
+// glyph = [#primary, #secondary] recolor pair used by medals.medalSvg). X = locked (grey).
+var RANK_TITLE = { S: "#EB355E", A: "#D79533", B: "#9D8FFF", C: "#58A6FF", X: "#666666" };
+var RANK_GAUGE = { S: "#EB355E", A: "#E7BD69", B: "#9E91FF", C: "#58A6FF", X: "#B0B0B0" };
+var RANK_GLYPH = { S: ["#EB355E", "#731237"], A: ["#B59151", "#FFD576"], B: ["#7D6CFF", "#B2A8FF"], C: ["#2088FF", "#79B8FF"], X: ["#7A7A7A", "#B0B0B0"] };
+var RANK_PREFIX = { S: "Master", A: "Super", B: "Great", C: "", X: "" };
+var RANK_ORDER = { S: 4, A: 3, B: 2, C: 1, X: 0 };
 
-// Declarative achievement table. value per id is precomputed in parse().
+// Declarative achievement table. value per id is precomputed in parse(); the medal glyph
+// is looked up by id in medals.js.
 var DEFS = [
-    { id: "developer", title: "Developer", icon: "repo", thresholds: [1, 20, 50, 100, 250],
+    { id: "developer", title: "Developer", thresholds: [1, 20, 50, 100, 250],
       desc: function(n) { return "Published " + groupNum(n) + " public " + plural(n, "repositor", "y", "ies"); } },
-    { id: "maintainer", title: "Maintainer", icon: "star", thresholds: [1, 1000, 5000, 10000, 25000],
+    { id: "maintainer", title: "Maintainer", thresholds: [1, 1000, 5000, 10000, 25000],
       desc: function(n) { return "Maintaining a repository with " + groupNum(n) + " " + plural(n, "star"); } },
-    { id: "influencer", title: "Influencer", icon: "people", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "influencer", title: "Influencer", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Followed by " + groupNum(n) + " " + plural(n, "user"); } },
-    { id: "polyglot", title: "Polyglot", icon: "code", thresholds: [1, 4, 8, 16, 32],
+    { id: "polyglot", title: "Polyglot", thresholds: [1, 4, 8, 16, 32],
       desc: function(n) { return "Using " + groupNum(n) + " different programming " + plural(n, "language"); } },
-    { id: "member", title: "Member", icon: "calendar", thresholds: [1, 3, 5, 10, 15],
+    { id: "member", title: "Member", thresholds: [1, 3, 5, 10, 15],
       desc: function(n) { return "Registered " + groupNum(n) + " " + plural(n, "year") + " ago"; } },
-    { id: "stargazer", title: "Stargazer", icon: "star", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "stargazer", title: "Stargazer", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Starred " + groupNum(n) + " " + plural(n, "repositor", "y", "ies"); } },
-    { id: "contributor", title: "Contributor", icon: "prs", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "contributor", title: "Contributor", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Opened " + groupNum(n) + " pull " + plural(n, "request"); } },
-    { id: "reviewer", title: "Reviewer", icon: "code-review", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "reviewer", title: "Reviewer", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Reviewed " + groupNum(n) + " pull " + plural(n, "request"); } },
-    { id: "gister", title: "Gister", icon: "gists", thresholds: [1, 20, 50, 100, 250],
+    { id: "gister", title: "Gister", thresholds: [1, 20, 50, 100, 250],
       desc: function(n) { return "Published " + groupNum(n) + " " + plural(n, "gist"); } },
-    { id: "worker", title: "Worker", icon: "orgs", thresholds: [1, 2, 4, 8, 10],
+    { id: "worker", title: "Worker", thresholds: [1, 2, 4, 8, 10],
       desc: function(n) { return "Joined " + groupNum(n) + " " + plural(n, "organization"); } },
-    { id: "follower", title: "Follower", icon: "person", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "follower", title: "Follower", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Following " + groupNum(n) + " " + plural(n, "user"); } },
-    { id: "sponsor", title: "Sponsor", icon: "sponsoring", thresholds: [1, 3, 5, 10, 25],
+    { id: "sponsor", title: "Sponsor", thresholds: [1, 3, 5, 10, 25],
       desc: function(n) { return "Sponsoring " + groupNum(n) + " " + plural(n, "user") + " or " + plural(n, "organization"); } },
-    { id: "forker", title: "Forker", icon: "repo-forked", thresholds: [1, 5, 10, 20, 50],
+    { id: "forker", title: "Forker", thresholds: [1, 5, 10, 20, 50],
       desc: function(n) { return "Forked " + groupNum(n) + " public " + plural(n, "repositor", "y", "ies"); } },
-    { id: "inspirer", title: "Inspirer", icon: "repo-forked", thresholds: [1, 100, 500, 1000, 2500],
+    { id: "inspirer", title: "Inspirer", thresholds: [1, 100, 500, 1000, 2500],
       desc: function(n) { return "A repository forked " + groupNum(n) + " " + plural(n, "time"); } },
-    { id: "chatter", title: "Chatter", icon: "comment-discussion", thresholds: [1, 200, 500, 1000, 2500],
+    { id: "chatter", title: "Chatter", thresholds: [1, 200, 500, 1000, 2500],
       desc: function(n) { return "Participated in discussions " + groupNum(n) + " " + plural(n, "time"); } }
 ];
 
@@ -128,17 +133,22 @@ function parse(data, now) {
         var def = DEFS[d];
         var val = values[def.id];
         var r = rank(val, def.thresholds);
-        if (r.rank === "X") continue;
+        // Member is a float (years); display its floor. Locked (X) achievements are kept
+        // and shown greyed, like the metrics medal grid.
         var displayVal = def.id === "member" ? Math.floor(val) : val;
         out.push({
             id: def.id,
             title: def.title,
+            prefix: RANK_PREFIX[r.rank],
             description: def.desc(displayVal),
             rank: r.rank,
-            rankColor: RANK_COLORS[r.rank],
-            icon: def.icon,
-            value: val,
-            progress: r.progress
+            locked: r.rank === "X",
+            value: displayVal,
+            progress: r.progress < 0 ? 0 : (r.progress > 1 ? 1 : r.progress),
+            titleColor: RANK_TITLE[r.rank],
+            gaugeColor: RANK_GAUGE[r.rank],
+            glyphPrimary: RANK_GLYPH[r.rank][0],
+            glyphSecondary: RANK_GLYPH[r.rank][1]
         });
     }
     out.sort(function(a, b) {
