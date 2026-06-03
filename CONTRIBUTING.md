@@ -205,15 +205,18 @@ and it renders.
    on<Key>Changed() { card.reload(); } }`. If it only changes *how* the data looks, bind
    to it directly and don't reload.
 3. Add a per-card options section to `ConfigCards.qml`: a block shown via
-   `visible: page.isEnabled("followers")`, with a `cfg_<key>` alias at the page root for
-   each control. (The `cfg_` alias must target a root-scope id — see ARCHITECTURE.md.)
+   `visible: page.isEnabled("followers")`, with a `cfg_<key>` alias for each control. (An
+   alias can target any id in the page except one inside the enable/reorder `Repeater` —
+   see ARCHITECTURE.md. Keep the section inside the page's `SimpleKCM` content layout so it
+   scrolls with the rest.)
 
 ### If your card should span the full width
 
 Cards default to flowing into the configured columns. To make one always span every
-column (like the heatmap and languages cards): set `fullWidth: true` on the card **and**
-add its id to `CardHost.isFullWidth(id)`. Both need to list it — the host groups cards
-into rows before they're instantiated, so it can't read the property on its own.
+column (like the heatmap, languages, stars, and achievements cards): set `fullWidth: true`
+on the card **and** add its id to `CardHost.isFullWidth(id)`. Both need to list it — the
+host groups cards into rows before they're instantiated, so it can't read the property on
+its own.
 
 ### Keep ids single lowercase words
 

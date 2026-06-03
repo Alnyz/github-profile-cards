@@ -10,7 +10,8 @@ document explains *why* things are shaped the way they are.
 It's a KDE Plasma 6 plasmoid (a desktop/panel applet written in QML). The core idea
 is a **card framework**: the widget itself is just a host that arranges a set of
 self-contained "cards", and each card knows how to fetch and draw one thing
-(profile, stats, languages, the contribution heatmap).
+(profile, stats, languages, the contribution heatmap, recently starred repos, rank
+achievements).
 
 The data all comes from GitHub's GraphQL API. The token comes from the `gh` CLI that
 the user already has signed in. There's no backend and no settings server — every
@@ -55,13 +56,14 @@ package/
       cards/
         <name>.js               a card's GraphQL query() + parse()  (no Qt; testable)
         <Name>Card.qml          a card's view; fetches its own data
+        medals.js               Achievements glyphs + per-rank SVG builder (no Qt)
     config/
       main.xml                  config schema (every persisted key)
       config.qml                registers the settings pages
     icons/
       icon.png                  app icon for the widget list
       github.svg                GitHub mark for the panel
-      stats/                    Octicons used by the Stats card
+      stats/                    Octicons used by the Stats and Stars cards
 ```
 
 Two layout rules worth calling out, because they're easy to trip on:
@@ -175,13 +177,27 @@ The heatmap card delegates its actual grid to `HeatmapGrid.qml`, a pure view tha
 `weeks` (an array of week arrays of day objects) and draws coloured squares. It's the
 only piece of view shared between cards, kept separate because it has real layout logic.
 
+### `medals.js` (Achievements)
+
+The Achievements card is the one card that needs a third file. `achievements.js` does the
+usual `query()`/`parse()` (a declarative table of 15 achievements, each ranked S/A/B/C/X
+against fixed thresholds — ranks and colours ported from metrics). `medals.js` holds the
+15 medal **glyphs** (extracted from metrics, MIT) with `#primary`/`#secondary` colour
+placeholders, plus `medalSvg(id, primary, secondary)` which recolours one to a rank and
+returns an SVG string. The view base64-encodes that into an `Image { source: "data:..." }`
+and draws the gauge ring around it with a `Shape` (Qt's SVG renderer can't do the mask/arc
+tricks metrics uses, so the ring is QML, only the glyph is SVG). Both `.js` files are pure
+and Node-tested. The card has two layouts — a wrapping medallion grid and a detailed list —
+switched by the `achievementsMode` config key.
+
 ## `CardHost.qml`
 
 The host turns the configured list of card ids into a laid-out set of cards.
 
-- **Rows.** Full-width cards (heatmap, languages) each take their own row. The rest
-  (profile, stats) pack into rows of `columnCount`. So at one column everything stacks;
-  at two columns profile and stats sit side by side while the wide cards still span.
+- **Rows.** Full-width cards (heatmap, languages, stars, achievements) each take their
+  own row. The rest (profile, stats) pack into rows of `columnCount`. So at one column
+  everything stacks; at two columns profile and stats sit side by side while the wide
+  cards still span.
 - **Dividers.** A single divider is drawn under each row by the host — that's why the
   cards themselves don't draw a divider. Side-by-side cards share one connected line.
 - **Token.** Each card is instantiated through a `Loader`; on load the host binds the
@@ -192,9 +208,9 @@ The host turns the configured list of card ids into a laid-out set of cards.
 
 **Full-width coupling (important).** Row grouping happens *before* the cards are
 instantiated, so the host can't read a card's `fullWidth` property at grouping time.
-Instead `CardHost.isFullWidth(id)` has a hardcoded list (`heatmap`, `languages`). If you
-add a full-width card you must add its id there as well as setting `fullWidth: true` on
-the card. The two need to agree.
+Instead `CardHost.isFullWidth(id)` has a hardcoded list (`heatmap`, `languages`, `stars`,
+`achievements`). If you add a full-width card you must add its id there as well as setting
+`fullWidth: true` on the card. The two need to agree.
 
 ## `main.qml`
 
@@ -207,18 +223,32 @@ The root applet. It:
 
 ### Sizing
 
-The widget sizes itself to its content and disables manual resizing (I'd rather it
-always fit than have people fiddle with handles). It does that by pinning the layout's
-min == preferred == max:
+The widget tries to fit its content:
 
-- **Width** comes from the heatmap's natural width — the configured period fixes the
-  number of columns (week/month/year → 3/6/53), so the width is known before any data
-  loads. `cell`/`gap` here must match the values in `HeatmapCard`.
-- **Height** is bound to the layout's actual `implicitHeight`, so the box tracks the
-  real rendered content and reacts when cards load or settings change.
+- **Width** is pinned (min == preferred == max) to the heatmap's natural width — the
+  configured period fixes the number of columns (week/month/year → 3/6/53), so the width
+  is known before any data loads. `cell`/`gap` here must match the values in `HeatmapCard`.
+- **Height** binds `minimumHeight` and `preferredHeight` to the layout's `implicitHeight`,
+  so the box starts at the content size and **grows** as cards load or get enabled. There
+  is deliberately **no** `maximumHeight` pin.
 
-This sizing is currently the one part that knows specifics about the heatmap card. If
-the heatmap stops being the width-defining card, this is where you'd generalise it.
+**The shrink limitation (important, and not obvious).** Plasma's desktop containment
+enforces a placed widget's `minimumHeight` (so growth works) but will **not** pull the
+frame back down when the content shrinks — it ignores a shrinking `maximumHeight`, whether
+that's a binding or set imperatively (verified). So pinning `maximumHeight: implicitHeight`
+doesn't make the box shrink when you disable a card; it just leaves the box stuck at its
+old height with empty space, and because min == max the widget also isn't user-resizable,
+so there's no recourse but to re-add it.
+
+Dropping the `maximumHeight` pin is the lever we *do* have: the widget stays content-fitting
+on growth, and because `minimumHeight` still equals the content, it stays resizable down to
+(but never below) the content. After disabling a card you drag the bottom edge up to reclaim
+the empty space without ever clipping the cards. If a future Plasma makes desktop widgets
+honor a shrinking max, re-pinning `maximumHeight: view.implicitHeight` would restore full
+auto-fit.
+
+This sizing is also the one part that knows specifics about the heatmap card (the width
+calc). If the heatmap stops being the width-defining card, this is where you'd generalise it.
 
 ## Configuration
 
@@ -238,10 +268,10 @@ bound to the `<key>` entry in `main.xml`. For a simple control you alias it:
 property alias cfg_refreshMinutes: refreshSpin.value
 ```
 
-A `cfg_` alias can only point at an id that lives at the **page root scope** — not at
-an id inside a `Repeater`/`Component` delegate (those ids aren't reachable, and the
-page fails to load). That's why `ConfigCards` keeps the per-card option controls in
-fixed sections at the root and only uses the `Repeater` for the enable/reorder rows
+A `cfg_` alias can point at any id in the page's component **except** one inside a
+`Repeater`/`Component` delegate (those are instantiated dynamically, so their ids aren't
+reachable and the page fails to load). That's why `ConfigCards` keeps the per-card option
+controls in fixed sections and only uses the `Repeater` for the enable/reorder rows
 (which call page functions instead of aliasing ids).
 
 ### The Cards page
@@ -254,8 +284,13 @@ fixed sections at the root and only uses the `Repeater` for the enable/reorder r
   it (a fresh array is what makes Plasma mark the page dirty and save).
 - **The registry.** A small `registry` array of `{ id, label }` is the list of cards
   the page knows about. Add a card here and it appears in the list.
-- **Per-card options.** Each card's options are a fixed section at the root, shown via
+- **Per-card options.** Each card's options are a fixed section, shown via
   `visible: page.isEnabled("<id>")`, with `cfg_` aliases for each control.
+
+The page root is a `KCM.SimpleKCM` wrapping a single content `ColumnLayout`, so the page
+**scrolls** once the enable/reorder list plus the per-card option sections grow taller than
+the settings dialog. A plain `ColumnLayout` root doesn't scroll, so the lower option
+sections would be clipped and unreachable — keep the `SimpleKCM` wrapper when adding cards.
 
 `ConfigGeneral.qml` is simpler: just the refresh interval and the column count.
 

@@ -19,8 +19,12 @@ instead.
   long you've been on GitHub — every field can be hidden individually
 - **Stats**: stars, commits this year, pull requests, issues, sponsors, sponsoring,
   gists, and organizations, each with its GitHub icon
+- **Stars**: your most recently starred repositories — language, license, and counts,
+  click a row to open it
+- **Achievements**: rank medals (Master/Super/Great, à la metrics) worked out from your
+  stats, shown as a medallion grid or a detailed list
 - Turn cards on/off and reorder them from the settings
-- One or more columns; the widget resizes itself to fit what's shown
+- One or more columns; the widget grows to fit what's shown
 - Refreshes on a timer (and there's a manual refresh button)
 
 ## Requirements
@@ -68,8 +72,8 @@ Right-click the widget and pick **Configure**.
 - **Cards** — enable or disable each card, reorder with the up/down buttons, and set
   each card's own options (profile fields, language count, heatmap range, colors).
 
-The Languages and Contributions cards always take the full width. Profile and Stats
-are the ones that flow into the columns you set.
+The Contributions, Languages, Stars, and Achievements cards always take the full width.
+Profile and Stats are the ones that flow into the columns you set.
 
 ## How it uses your account
 
@@ -79,8 +83,16 @@ written to your account, and nothing is sent anywhere other than GitHub.
 
 ## Known limitations
 
-- The star total and the language breakdown are summed over your first 100 owned
-  repositories. If you have more than that, both will be a slight undercount.
+- **The widget grows to fit but doesn't auto-shrink.** Plasma grows a desktop widget to
+  honor its content, but it won't pull a placed widget's frame back down when the content
+  gets smaller. So after you disable a card the box keeps its height with empty space at
+  the top — drag the widget's bottom edge up to reclaim it (it won't let you drag small
+  enough to clip the cards). Re-adding the widget also re-fits it.
+- The star total, language breakdown, and the Achievements "Inspirer"/"Polyglot" medals
+  are computed over your first 100 owned repositories. With more than that they'll be a
+  slight undercount.
+- The Achievements "Reviewer" medal counts pull-request reviews from the **last 12 months**
+  only — that's all GitHub's API exposes for it.
 - It shows the account `gh` is signed in as — there's no setting to point it at a
   different GitHub user.
 
@@ -122,6 +134,9 @@ Issues and pull requests are welcome.
 
 - The stat icons are [GitHub Octicons](https://github.com/primer/octicons) (MIT),
   bundled under `package/contents/icons/stats/`.
+- The Achievements idea and its medal glyphs come from
+  [lowlighter/metrics](https://github.com/lowlighter/metrics) (MIT); the glyphs are
+  bundled in `package/contents/ui/cards/medals.js` and recolored per rank at runtime.
 - The avatar uses [Kirigami Addons](https://invent.kde.org/libraries/kirigami-addons).
 
 ## License
