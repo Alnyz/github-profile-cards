@@ -16,6 +16,7 @@ ColumnLayout {
     property alias cfg_heatmapUseAccent: heatmapAccent.checked
     property alias cfg_languagesCount: langCount.value
     property alias cfg_languagesIncludeForks: langForks.checked
+    property alias cfg_starsCount: starsCount.value
     property alias cfg_profileShowAvatar: pAvatar.checked
     property alias cfg_profileShowName: pName.checked
     property alias cfg_profileShowLogin: pLogin.checked
@@ -32,7 +33,8 @@ ColumnLayout {
         { id: "profile",   label: "Profile" },
         { id: "stats",     label: "Stats" },
         { id: "languages", label: "Languages" },
-        { id: "heatmap",   label: "Contribution heatmap" }
+        { id: "heatmap",   label: "Contribution heatmap" },
+        { id: "stars",     label: "Stars (recently starred)" }
     ]
 
     function isEnabled(id) { return page.cfg_cards.indexOf(id) >= 0; }
@@ -158,5 +160,16 @@ ColumnLayout {
             }
         }
         CheckBox { id: heatmapAccent; text: "Use Plasma accent instead of GitHub greens" }
+    }
+
+    // Stars
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: page.isEnabled("stars")
+        Label { text: "Stars"; font.bold: true }
+        RowLayout {
+            Label { text: "Repositories to show:" }
+            SpinBox { id: starsCount; from: 1; to: 5 }
+        }
     }
 }
