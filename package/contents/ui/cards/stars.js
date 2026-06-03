@@ -1,6 +1,6 @@
 // Stars card: GraphQL query and response parser for recently starred repos.
 function query(limit) {
-    var n = Math.max(1, limit || 3);
+    var n = Math.max(1, limit === undefined ? 3 : limit);
     return "query { viewer { starredRepositories(first: " + n
         + ", orderBy: {field: STARRED_AT, direction: DESC}) { edges { starredAt node { "
         + "url nameWithOwner description stargazerCount forkCount "
@@ -10,16 +10,20 @@ function query(limit) {
 }
 
 // Format a count GitHub-style: 999 -> "999", 7420 -> "7.42k", 23000 -> "23k", 1.5e6 -> "1.5m".
+// toFixed can round e.g. 999999/1000 up to "1000"; promote to the next unit when it does.
 function compact(n) {
     if (!n) return "0";
     if (n < 1000) return String(n);
-    var unit = n < 1000000 ? "k" : "m";
-    var v = n < 1000000 ? n / 1000 : n / 1000000;
-    var s = v.toFixed(2).replace(/\.?0+$/, "");
-    return s + unit;
+    if (n < 1000000) {
+        var k = (n / 1000).toFixed(2).replace(/\.?0+$/, "");
+        if (k !== "1000") return k + "k";
+    }
+    return (n / 1000000).toFixed(2).replace(/\.?0+$/, "") + "m";
 }
 
-// Relative time from an ISO date to `now` (epoch ms): hours, then days, then weeks.
+// Relative time from an ISO date to `now` (epoch ms): hours (<1 day), then exact days
+// (<30 days), then a coarse week count beyond 30 days (so the first week label is "4 weeks
+// ago" — intentional: stars older than a month only need an approximate age).
 function relTime(iso, now) {
     var days = (now - new Date(iso).getTime()) / (24 * 60 * 60 * 1000);
     var out;

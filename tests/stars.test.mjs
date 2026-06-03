@@ -10,6 +10,7 @@ assert.ok(q.indexOf("STARRED_AT") !== -1 && q.indexOf("DESC") !== -1, "newest fi
 assert.ok(q.indexOf("issues(states: OPEN)") !== -1, "open issues only");
 assert.ok(q.indexOf("pullRequests(states: OPEN)") !== -1, "open PRs only");
 assert.strictEqual(Stars.query().indexOf("first: 3") !== -1, true, "defaults to 3");
+assert.ok(Stars.query(0).indexOf("first: 1") !== -1, "clamps to at least 1");
 
 // compact() formats counts GitHub-style.
 assert.strictEqual(Stars.compact(999), "999", "below 1000 as-is");
@@ -17,6 +18,8 @@ assert.strictEqual(Stars.compact(1000), "1k", "exactly 1000");
 assert.strictEqual(Stars.compact(7420), "7.42k", "two decimals");
 assert.strictEqual(Stars.compact(23000), "23k", "trailing zeros trimmed");
 assert.strictEqual(Stars.compact(1500000), "1.5m", "millions");
+assert.strictEqual(Stars.compact(0), "0", "zero");
+assert.strictEqual(Stars.compact(999999), "1m", "rounds up past the k unit");
 
 // relTime() — pinned now so it's deterministic.
 const now = Date.parse("2026-06-03T12:00:00Z");
@@ -24,6 +27,8 @@ assert.strictEqual(Stars.relTime("2026-06-03T09:00:00Z", now), "starred 3 hours 
 assert.strictEqual(Stars.relTime("2026-06-03T11:00:00Z", now), "starred 1 hour ago");
 assert.strictEqual(Stars.relTime("2026-05-30T12:00:00Z", now), "starred 4 days ago");
 assert.strictEqual(Stars.relTime("2026-06-02T12:00:00Z", now), "starred 1 day ago");
+assert.strictEqual(Stars.relTime("2026-05-05T12:00:00Z", now), "starred 29 days ago");
+assert.strictEqual(Stars.relTime("2026-05-04T12:00:00Z", now), "starred 4 weeks ago");
 assert.strictEqual(Stars.relTime("2026-04-20T12:00:00Z", now), "starred 6 weeks ago");
 
 // parse() — full row + a row with null language/license and empty description.
