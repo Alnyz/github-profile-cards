@@ -21,8 +21,8 @@ instead.
   gists, and organizations, each with its GitHub icon
 - **Stars**: your most recently starred repositories — language, license, and counts,
   click a row to open it
-- **Achievements**: rank medals (Master/Super/Great, à la metrics) worked out from your
-  stats, shown as a medallion grid or a detailed list
+- **Achievements**: rank medals (Master/Super/Great, modeled on metrics) worked out from
+  your stats, shown as a medallion grid or a detailed list
 - Turn cards on/off and reorder them from the settings
 - One or more columns; the widget grows to fit what's shown
 - Refreshes on a timer (and there's a manual refresh button)

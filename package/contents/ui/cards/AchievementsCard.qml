@@ -7,7 +7,7 @@ import "../../code/GitHub.js" as GitHub
 import "achievements.js" as Achievements
 import "medals.js" as Medals
 
-// Achievements card: synthesized rank medals from your stats, à la lowlighter/metrics.
+// Achievements card: synthesized rank medals from your stats, modeled on lowlighter/metrics.
 // Two display modes (config: achievementsMode): "simple" = a wrapping grid of medallions,
 // "detailed" = a list of medallion + title + description. Set `token` to use it.
 ColumnLayout {

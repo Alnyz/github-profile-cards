@@ -1,5 +1,5 @@
 // Achievements card: GraphQL query + table-driven S/A/B/C rank computation.
-// Synthesized ranks (à la lowlighter/metrics), NOT GitHub's native badges.
+// Synthesized ranks (modeled on lowlighter/metrics), NOT GitHub's native badges.
 
 // One query on viewer. Every field is verified to succeed under the default gh token
 // scopes (gist, read:org, repo, workflow) — do NOT add scope-gated fields (packages,
