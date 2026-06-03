@@ -2,12 +2,12 @@
     "KPlugin": {
         "Id": "id.alnyz.githubgraph",
         "Name": "GitHub Profile Cards",
-        "Description": "Shows your GitHub contribution heatmap on your desktop or panel",
+        "Description": "Your GitHub profile, stats, languages, contribution heatmap, recent stars, and rank achievements as desktop cards",
         "Icon": "/icons/icon.png",
         "Authors": [ { "Name": "Alnyz" } ],
         "Category": "Online Services",
         "License": "MIT",
-        "Version": "0.1.0"
+        "Version": "0.2.0"
     },
     "KPackageStructure": "Plasma/Applet",
     "X-Plasma-API-Minimum-Version": "6.0"
