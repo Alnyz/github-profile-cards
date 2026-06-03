@@ -1,15 +1,16 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 
 // Cards settings: enable/disable, reorder, and per-card options. cfg_cards holds the
-// ordered list of enabled card ids. A cfg_ alias can only target a root-scope id (not
-// one inside a Repeater delegate), so the per-card options live in the fixed sections
-// below rather than in the reorder list.
-ColumnLayout {
+// ordered list of enabled card ids. The page is a SimpleKCM so its content scrolls when
+// it grows taller than the dialog. A cfg_ alias can target any id in this file except one
+// inside a Repeater delegate, so the per-card options live in the fixed sections below the
+// reorder list rather than in it.
+KCM.SimpleKCM {
     id: page
-    spacing: Kirigami.Units.largeSpacing
 
     property var cfg_cards: []
     property string cfg_heatmapPeriod: "year"
@@ -71,6 +72,9 @@ ColumnLayout {
         }
         return out;
     }
+
+    ColumnLayout {
+        spacing: Kirigami.Units.largeSpacing
 
     Kirigami.Heading { level: 3; text: "Cards" }
     Label {
@@ -171,5 +175,6 @@ ColumnLayout {
             Label { text: "Repositories to show:" }
             SpinBox { id: starsCount; from: 1; to: 5 }
         }
+    }
     }
 }
