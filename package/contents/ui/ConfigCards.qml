@@ -19,6 +19,7 @@ KCM.SimpleKCM {
     property alias cfg_languagesIncludeForks: langForks.checked
     property alias cfg_starsCount: starsCount.value
     property alias cfg_achievementsCount: achievementsCount.value
+    property string cfg_achievementsMode: "simple"
     property alias cfg_profileShowAvatar: pAvatar.checked
     property alias cfg_profileShowName: pName.checked
     property alias cfg_profileShowLogin: pLogin.checked
@@ -187,6 +188,18 @@ KCM.SimpleKCM {
         RowLayout {
             Label { text: "Medals to show:" }
             SpinBox { id: achievementsCount; from: 1; to: 15 }
+        }
+        RowLayout {
+            Label { text: "Display:" }
+            ComboBox {
+                id: achievementsModeCombo
+                model: [ { text: "Simple grid", val: "simple" },
+                         { text: "Detailed list", val: "detailed" } ]
+                textRole: "text"
+                valueRole: "val"
+                currentIndex: page.cfg_achievementsMode === "detailed" ? 1 : 0
+                onActivated: page.cfg_achievementsMode = currentValue
+            }
         }
     }
     }
