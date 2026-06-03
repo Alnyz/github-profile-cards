@@ -35,7 +35,10 @@ ColumnLayout {
         opacity: 0.5
     }
 
-    // One row per achievement; the configured count slices the (already sorted) list.
+    // One row per achievement. The query always fetches everything and parse() returns
+    // the full sorted list, so the count is a display-only slice that updates reactively —
+    // no Connections/reload on achievementsCount is needed (unlike StarsCard, where the
+    // count is part of the query).
     Repeater {
         model: card.model ? card.model.achievements.slice(0, plasmoid.configuration.achievementsCount) : []
         delegate: RowLayout {
