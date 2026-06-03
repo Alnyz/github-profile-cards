@@ -132,22 +132,10 @@ ColumnLayout {
                 }
 
                 // License (hidden when the repo has none).
-                Row {
+                Meta {
                     visible: repoRow.modelData.license !== null
-                    spacing: Kirigami.Units.smallSpacing
-                    Kirigami.Icon {
-                        source: Qt.resolvedUrl("../../icons/stats/law.svg")
-                        isMask: true
-                        color: Kirigami.Theme.textColor
-                        width: Kirigami.Units.iconSizes.small
-                        height: width
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    PlasmaComponents.Label {
-                        opacity: 0.8
-                        text: repoRow.modelData.license || ""
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                    iconName: "law"
+                    value: repoRow.modelData.license || ""
                 }
 
                 Meta { iconName: "star"; value: repoRow.modelData.starsText }
