@@ -47,9 +47,13 @@ PlasmoidItem {
         Layout.minimumWidth: wantWidth
         Layout.preferredWidth: wantWidth
         Layout.maximumWidth: wantWidth
+        // Height auto-grows to fit content (minimumHeight) and starts at content size
+        // (preferredHeight). No maximumHeight pin: Plasma can't auto-shrink a placed desktop
+        // widget, so leaving the height resizable lets the user drag the bottom edge down to
+        // reclaim space after removing cards. minimumHeight == content means it can never be
+        // dragged small enough to clip the cards.
         Layout.minimumHeight: view.implicitHeight
         Layout.preferredHeight: view.implicitHeight
-        Layout.maximumHeight: view.implicitHeight
         spacing: Kirigami.Units.smallSpacing
 
         // Shown until a gh token is available.
