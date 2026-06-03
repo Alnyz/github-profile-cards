@@ -30,6 +30,7 @@
         <entry name="languagesCount" type="Int"><default>5</default></entry>
         <entry name="languagesIncludeForks" type="Bool"><default>false</default></entry>
         <entry name="starsCount" type="Int"><default>3</default></entry>
+        <entry name="achievementsCount" type="Int"><default>6</default></entry>
         <entry name="authMode" type="String">
             <default>device</default>
         </entry>

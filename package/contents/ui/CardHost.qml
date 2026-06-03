@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
-// Lays out the enabled cards in rows: full-width cards (heatmap, languages, stars) take a
+// Lays out the enabled cards in rows: full-width cards (heatmap, languages, stars, achievements) take a
 // row each, the rest pack into rows of `columnCount`. A divider spans each row.
 ColumnLayout {
     id: host
@@ -15,7 +15,7 @@ ColumnLayout {
     spacing: Kirigami.Units.smallSpacing
 
     function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-    function isFullWidth(id) { return id === "heatmap" || id === "languages" || id === "stars"; }
+    function isFullWidth(id) { return id === "heatmap" || id === "languages" || id === "stars" || id === "achievements"; }
 
     // Group cardIds into rows (each row is an array of ids).
     function rows() {

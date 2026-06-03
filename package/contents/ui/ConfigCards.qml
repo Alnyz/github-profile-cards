@@ -18,6 +18,7 @@ KCM.SimpleKCM {
     property alias cfg_languagesCount: langCount.value
     property alias cfg_languagesIncludeForks: langForks.checked
     property alias cfg_starsCount: starsCount.value
+    property alias cfg_achievementsCount: achievementsCount.value
     property alias cfg_profileShowAvatar: pAvatar.checked
     property alias cfg_profileShowName: pName.checked
     property alias cfg_profileShowLogin: pLogin.checked
@@ -35,7 +36,8 @@ KCM.SimpleKCM {
         { id: "stats",     label: "Stats" },
         { id: "languages", label: "Languages" },
         { id: "heatmap",   label: "Contribution heatmap" },
-        { id: "stars",     label: "Stars (recently starred)" }
+        { id: "stars",     label: "Stars (recently starred)" },
+        { id: "achievements", label: "Achievements (ranked medals)" }
     ]
 
     function isEnabled(id) { return page.cfg_cards.indexOf(id) >= 0; }
@@ -174,6 +176,17 @@ KCM.SimpleKCM {
         RowLayout {
             Label { text: "Repositories to show:" }
             SpinBox { id: starsCount; from: 1; to: 5 }
+        }
+    }
+
+    // Achievements
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: page.isEnabled("achievements")
+        Label { text: "Achievements"; font.bold: true }
+        RowLayout {
+            Label { text: "Medals to show:" }
+            SpinBox { id: achievementsCount; from: 1; to: 15 }
         }
     }
     }
