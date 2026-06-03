@@ -126,7 +126,7 @@ package/contents/
 
 [ARCHITECTURE.md](ARCHITECTURE.md) explains how the whole thing fits together, and
 [CONTRIBUTING.md](CONTRIBUTING.md) walks through the dev loop and adding a card
-step by step.
+step by step. Release notes live in [CHANGELOG.md](CHANGELOG.md).
 
 Issues and pull requests are welcome.
 
